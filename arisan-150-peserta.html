@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arisan 150 Peserta — Buku Catatan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7EE;
+    --paper-deep:#F1E9D6;
+    --ink:#26332B;
+    --ink-muted:#63705F;
+    --stamp:#A2372B;
+    --gold:#AD8323;
+    --green:#42624A;
+    --line:#D8CBAC;
+    --line-soft:#E7DDC5;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{
+    max-width:880px;
+    margin:0 auto;
+    padding:40px 28px 80px;
+  }
+  .num{ font-family:'IBM Plex Mono', monospace; }
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:22px;
+    margin-bottom:30px;
+  }
+  .masthead-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  .book-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.03em;
+    color:var(--ink-muted);
+    border:1px solid var(--line);
+    padding:4px 10px;
+    border-radius:2px;
+    background:var(--paper-deep);
+  }
+  .version-switch{
+    display:inline-flex;
+    border:1px solid var(--ink);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .switch-btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13.5px;
+    font-weight:500;
+    padding:8px 14px;
+    background:var(--paper);
+    color:var(--ink);
+    border:none;
+    cursor:pointer;
+    border-right:1px solid var(--ink);
+  }
+  .switch-btn:last-child{ border-right:none; }
+  .switch-btn.active{
+    background:var(--ink);
+    color:var(--paper);
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:42px;
+    line-height:1.05;
+    margin:0 0 10px;
+  }
+  .subhead{
+    font-size:15.5px;
+    color:var(--ink-muted);
+    max-width:64ch;
+    margin:0;
+  }
+
+  /* ---------- Ledger blocks ---------- */
+  .ledger-block{ margin-bottom:34px; }
+  .ledger-block h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:22px;
+    margin:0 0 14px;
+  }
+  .ledger-block .desc{
+    font-size:14px;
+    color:var(--ink-muted);
+    margin:-8px 0 14px;
+  }
+
+  .rincian-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:11px 2px;
+    border-bottom:1px solid var(--line-soft);
+    font-size:15px;
+  }
+  .rincian-row .label{ display:flex; align-items:baseline; gap:10px; }
+  .rincian-row .dot{ width:7px; height:7px; border-radius:50%; background:var(--gold); flex:0 0 auto; }
+  .rincian-row.optional .dot{ background:var(--stamp); }
+  .rincian-row .amount{ font-weight:500; }
+  .rincian-row.total{
+    border-bottom:none;
+    border-top:2px solid var(--ink);
+    margin-top:4px;
+    padding-top:14px;
+    font-size:17px;
+    font-weight:600;
+  }
+  .rincian-row.excluded{ opacity:0.42; }
+  .rincian-row.excluded .amount::after{
+    content:" (tidak dipungut)";
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:400;
+    font-size:12px;
+  }
+
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .stat-cell{
+    background:var(--paper);
+    padding:16px 16px;
+  }
+  .stat-cell .stat-label{
+    font-size:12.5px;
+    color:var(--ink-muted);
+    margin-bottom:6px;
+  }
+  .stat-cell .stat-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:19px;
+    font-weight:500;
+  }
+  .stat-cell .stat-value.gold{ color:var(--gold); }
+  .stat-cell .stat-value.green{ color:var(--green); }
+  .stat-cell .stat-value.stamp{ color:var(--stamp); }
+
+  /* ---------- Advanced settings ---------- */
+  details.advanced-settings{
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:14px 18px;
+    margin-bottom:34px;
+    background:var(--paper-deep);
+  }
+  details.advanced-settings summary{
+    cursor:pointer;
+    font-weight:500;
+    font-size:14.5px;
+    color:var(--ink);
+  }
+  .settings-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    gap:14px;
+    margin-top:16px;
+  }
+  .field{ display:flex; flex-direction:column; gap:5px; }
+  .field label{ font-size:12.5px; color:var(--ink-muted); }
+  .field input, .field textarea{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    padding:8px 10px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  .field textarea{ font-family:'IBM Plex Sans',sans-serif; resize:vertical; min-height:60px; }
+  .settings-actions{ margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
+
+  /* ---------- Buttons ---------- */
+  button.action{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    font-weight:500;
+    padding:10px 16px;
+    border-radius:3px;
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    cursor:pointer;
+  }
+  button.action.secondary{
+    background:var(--paper);
+    color:var(--ink);
+  }
+  button.action:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+
+  /* ---------- Undian section ---------- */
+  .undian-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .undian-status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--ink-muted);
+  }
+  .undian-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:16px 0;
+  }
+  .undian-result{
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:18px 20px;
+    background:var(--paper-deep);
+    min-height:70px;
+    display:flex;
+    align-items:center;
+  }
+  .undian-result.empty{ color:var(--ink-muted); font-size:14px; }
+  .undian-result.done{ color:var(--ink-muted); font-size:14px; }
+  .winners-wrap{ width:100%; }
+  .winners-wrap .round-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-muted);
+    margin-bottom:10px;
+  }
+  .winners-list{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .winner-card{
+    border:1px solid var(--stamp);
+    color:var(--stamp);
+    border-radius:3px;
+    padding:8px 14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    transform:rotate(-1deg);
+    background:rgba(162,55,43,0.05);
+  }
+  .winner-card:nth-child(2){ transform:rotate(1.2deg); }
+  .winner-card:nth-child(3){ transform:rotate(-0.6deg); }
+  .winner-amount{
+    display:block;
+    margin-top:20px;
+    font-size:13.5px;
+    color:var(--ink-muted);
+  }
+  .winner-amount .num{ color:var(--ink); font-weight:500; }
+
+  /* ---------- Table ---------- */
+  .table-wrap{
+    border:1px solid var(--line);
+    border-radius:3px;
+    max-height:360px;
+    overflow:auto;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  thead th{
+    position:sticky;
+    top:0;
+    background:var(--paper-deep);
+    text-align:left;
+    padding:9px 12px;
+    font-weight:500;
+    font-size:12px;
+    color:var(--ink-muted);
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  tbody td{
+    padding:9px 12px;
+    border-bottom:1px solid var(--line-soft);
+    font-family:'IBM Plex Mono', monospace;
+    white-space:nowrap;
+  }
+  tbody td.winners-cell{
+    font-family:'IBM Plex Sans', sans-serif;
+    white-space:normal;
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  .table-empty-note{
+    padding:24px 16px;
+    text-align:center;
+    color:var(--ink-muted);
+    font-size:13.5px;
+  }
+
+  /* ---------- Comparison table ---------- */
+  table.compare{ font-size:14px; }
+  table.compare thead th{ font-size:12.5px; }
+  table.compare td, table.compare th{ text-align:right; }
+  table.compare td:first-child, table.compare th:first-child{ text-align:left; font-family:'IBM Plex Sans',sans-serif; white-space:normal; }
+  table.compare tr.total td{ border-top:2px solid var(--ink); font-weight:600; }
+  table.compare td.col-dengan{ color:var(--green); }
+  table.compare td.col-tanpa{ color:var(--ink-muted); }
+
+  .footnote{
+    font-size:12.5px;
+    color:var(--ink-muted);
+    margin-top:12px;
+  }
+  .footnote ul{ margin:6px 0 0; padding-left:18px; }
+  .footnote li{ margin-bottom:4px; }
+
+  .page-footer{
+    margin-top:50px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:var(--ink-muted);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width:520px){
+    h1{ font-size:32px; }
+    .masthead-top{ flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="book-label">Buku Arisan · Ilustrasi Simulasi</span>
+      <div class="version-switch" id="versionSwitch">
+        <button class="switch-btn active" data-version="dengan">Dengan simpanan sukarela</button>
+        <button class="switch-btn" data-version="tanpa">Tanpa simpanan sukarela</button>
+      </div>
+    </div>
+    <h1>Arisan <span id="titlePesertaCount">150</span> Peserta</h1>
+    <p class="subhead">Tiga nama diundi tiap akhir bulan. Halaman ini menghitung iuran, pembagian arisan tiap putaran, dan dana bersama untuk satu siklus penuh.</p>
+  </header>
+
+  <section class="ledger-block">
+    <h2>Rincian iuran per peserta / bulan</h2>
+    <div id="rincianList"></div>
+  </section>
+
+  <section class="ledger-block">
+    <h2>Yang terkumpul dari seluruh peserta tiap bulan</h2>
+    <p class="desc">Dihitung dari jumlah peserta saat ini dikali nominal per kategori.</p>
+    <div class="stat-grid" id="ringkasanBulanan"></div>
+  </section>
+
+  <details class="advanced-settings">
+    <summary>Ubah jumlah peserta, jumlah pemenang, atau nominal iuran</summary>
+    <div class="settings-grid">
+      <div class="field">
+        <label for="inpPeserta">Jumlah peserta</label>
+        <input type="number" id="inpPeserta" min="3" value="150">
+      </div>
+      <div class="field">
+        <label for="inpWinners">Nama diundi per bulan</label>
+        <input type="number" id="inpWinners" min="1" value="3">
+      </div>
+      <div class="field">
+        <label for="inpArisan">Arisan (Rp)</label>
+        <input type="number" id="inpArisan" step="1000" value="200000">
+      </div>
+      <div class="field">
+        <label for="inpKonsumsi">Konsumsi (Rp)</label>
+        <input type="number" id="inpKonsumsi" step="1000" value="50000">
+      </div>
+      <div class="field">
+        <label for="inpDanaSosial">Dana sosial (Rp)</label>
+        <input type="number" id="inpDanaSosial" step="1000" value="30000">
+      </div>
+      <div class="field">
+        <label for="inpUangKas">Uang kas (Rp)</label>
+        <input type="number" id="inpUangKas" step="1000" value="20000">
+      </div>
+      <div class="field">
+        <label for="inpSukarela">Simpanan sukarela (Rp)</label>
+        <input type="number" id="inpSukarela" step="1000" value="50000">
+      </div>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label for="inpNames">Daftar nama peserta (opsional — satu nama per baris, mengganti jumlah peserta di atas jika diisi)</label>
+      <textarea id="inpNames" placeholder="Kosongkan untuk memakai penomoran Peserta 001, Peserta 002, dst."></textarea>
+    </div>
+    <div class="settings-actions">
+      <button class="action" id="applySettingsBtn">Terapkan pengaturan</button>
+      <span class="footnote" id="settingsNote" style="align-self:center;"></span>
+    </div>
+  </details>
+
+  <section class="ledger-block undian-section">
+    <div class="undian-head">
+      <h2>Undian bulanan</h2>
+      <div class="undian-status">
+        Bulan ke <span class="num" id="roundNow">0</span> dari <span class="num" id="roundTotal">50</span>
+        · Sisa peserta belum menang: <span class="num" id="poolLeft">150</span>
+      </div>
+    </div>
+    <div class="undian-actions">
+      <button class="action" id="drawBtn">Kocok undian bulan ini</button>
+      <button class="action secondary" id="simulateBtn">Jalankan simulasi penuh</button>
+      <button class="action secondary" id="resetBtn">Ulangi dari awal</button>
+    </div>
+    <div class="undian-result empty" id="undianResult">Belum ada undian bulan ini. Tekan "Kocok undian bulan ini" untuk mulai.</div>
+  </section>
+
+  <section class="ledger-block">
+    <h2>Buku catatan arisan</h2>
+    <div class="table-wrap">
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th>Bulan</th>
+            <th>Pemenang</th>
+            <th>Arisan / pemenang</th>
+            <th>Dana sosial (kumulatif)</th>
+            <th>Uang kas (kumulatif)</th>
+            <th id="thSukarela">Simpanan sukarela (kumulatif)</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr><td colspan="6" class="table-empty-note">Riwayat undian akan muncul di sini setelah undian pertama dijalankan.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="ledger-block">
+    <h2>Proyeksi akhir program — setelah <span id="totalRoundsLabel2">50</span> bulan penuh</h2>
+    <p class="desc">Angka ini adalah proyeksi satu siklus arisan lengkap (setiap peserta menang tepat satu kali), tidak tergantung berapa undian yang sudah dijalankan di atas.</p>
+    <div class="stat-grid" id="ringkasanAkhir"></div>
+  </section>
+
+  <section class="ledger-block">
+    <h2>Perbandingan dua versi</h2>
+    <p class="desc">Versi dengan dan tanpa simpanan sukarela, dihitung untuk <span class="num" id="comparePesertaCount">150</span> peserta.</p>
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>Kategori</th>
+          <th>Per peserta / bulan</th>
+          <th class="col-dengan">Total kolektif / bulan<br>(dengan sukarela)</th>
+          <th class="col-tanpa">Total kolektif / bulan<br>(tanpa sukarela)</th>
+        </tr>
+      </thead>
+      <tbody id="compareBody"></tbody>
+    </table>
+    <div class="footnote">
+      <strong>Catatan:</strong>
+      <ul>
+        <li>Pemenang undian tetap membayar iuran penuh sampai satu siklus arisan selesai.</li>
+        <li>Dana arisan tiap bulan dibagi rata ke seluruh nama yang diundi bulan itu.</li>
+        <li>Dana sosial dan uang kas dikelola bersama sebagai kas kelompok, tidak dibagi per orang.</li>
+        <li>Simpanan sukarela pada versi "dengan" umumnya dikembalikan penuh ke masing-masing peserta di akhir periode arisan, terpisah dari dana sosial dan uang kas.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <span>Ilustrasi simulasi arisan — bukan catatan keuangan resmi.</span>
+    <span id="footerTotals"></span>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const fmt = (n) => 'Rp' + Math.round(n).toLocaleString('id-ID');
+
+  let state = {
+    pesertaCount: 150,
+    winnersPerRound: 3,
+    nominal: { arisan:200000, konsumsi:50000, danaSosial:30000, uangKas:20000, sukarela:50000 },
+    version: 'dengan',
+    names: [],
+    pool: [],
+    history: []
+  };
+
+  function genNames(count){
+    const arr = [];
+    for(let i=1;i<=count;i++){ arr.push('Peserta ' + String(i).padStart(3,'0')); }
+    return arr;
+  }
+
+  function initSimulation(){
+    state.names = genNames(state.pesertaCount);
+    state.pool = state.names.map((n,i)=>i);
+    state.history = [];
+  }
+
+  function totalIuranPerOrang(){
+    const n = state.nominal;
+    let t = n.arisan + n.konsumsi + n.danaSosial + n.uangKas;
+    if(state.version === 'dengan') t += n.sukarela;
+    return t;
+  }
+
+  function totalRounds(){
+    return Math.ceil(state.pesertaCount / state.winnersPerRound);
+  }
+
+  function categoryMonthlyTotal(key){
+    return state.nominal[key] * state.pesertaCount;
+  }
+
+  // ---------- Renderers ----------
+  function renderRincian(){
+    const n = state.nominal;
+    const rows = [
+      {key:'arisan', label:'Arisan', val:n.arisan, optional:false},
+      {key:'konsumsi', label:'Konsumsi', val:n.konsumsi, optional:false},
+      {key:'danaSosial', label:'Dana sosial', val:n.danaSosial, optional:false},
+      {key:'uangKas', label:'Uang kas', val:n.uangKas, optional:false},
+      {key:'sukarela', label:'Simpanan sukarela', val:n.sukarela, optional:true}
+    ];
+    let html = '';
+    rows.forEach(r=>{
+      const excluded = r.optional && state.version === 'tanpa';
+      html += `<div class="rincian-row ${r.optional?'optional':''} ${excluded?'excluded':''}">
+        <span class="label"><span class="dot"></span>${r.label}</span>
+        <span class="amount num">${fmt(r.val)}</span>
+      </div>`;
+    });
+    html += `<div class="rincian-row total">
+      <span class="label">Total iuran / peserta / bulan</span>
+      <span class="amount num">${fmt(totalIuranPerOrang())}</span>
+    </div>`;
+    document.getElementById('rincianList').innerHTML = html;
+  }
+
+  function renderRingkasanBulanan(){
+    const potArisan = categoryMonthlyTotal('arisan');
+    const cells = [
+      {label:'Total iuran terkumpul / bulan', val: totalIuranPerOrang()*state.pesertaCount, cls:''},
+      {label:'Dana arisan diundi / bulan', val: potArisan, cls:'gold'},
+      {label:`Diterima tiap pemenang (÷${state.winnersPerRound})`, val: potArisan/state.winnersPerRound, cls:'gold'},
+      {label:'Konsumsi / bulan', val: categoryMonthlyTotal('konsumsi'), cls:''},
+      {label:'Dana sosial / bulan', val: categoryMonthlyTotal('danaSosial'), cls:'green'},
+      {label:'Uang kas / bulan', val: categoryMonthlyTotal('uangKas'), cls:'green'},
+    ];
+    if(state.version === 'dengan'){
+      cells.push({label:'Simpanan sukarela / bulan', val: categoryMonthlyTotal('sukarela'), cls:'green'});
+    }
+    document.getElementById('ringkasanBulanan').innerHTML = cells.map(c=>`
+      <div class="stat-cell">
+        <div class="stat-label">${c.label}</div>
+        <div class="stat-value num ${c.cls}">${fmt(c.val)}</div>
+      </div>`).join('');
+  }
+
+  function renderRingkasanAkhir(){
+    const rounds = totalRounds();
+    document.getElementById('totalRoundsLabel').textContent = rounds;
+    document.getElementById('totalRoundsLabel2').textContent = rounds;
+    document.getElementById('roundTotal').textContent = rounds;
+
+    const potArisanBulan = categoryMonthlyTotal('arisan');
+    const totalArisanDibagikan = potArisanBulan * rounds;
+    const totalDanaSosial = categoryMonthlyTotal('danaSosial') * rounds;
+    const totalUangKas = categoryMonthlyTotal('uangKas') * rounds;
+    const totalKonsumsi = categoryMonthlyTotal('konsumsi') * rounds;
+    const sukarelaPerOrang = state.nominal.sukarela * rounds;
+    const totalSukarela = categoryMonthlyTotal('sukarela') * rounds;
+
+    let cells = [
+      {label:'Total arisan dibagikan (semua pemenang)', val: totalArisanDibagikan, cls:'gold'},
+      {label:'Rata-rata diterima / pemenang', val: potArisanBulan/state.winnersPerRound, cls:'gold'},
+      {label:'Total dana sosial terkumpul', val: totalDanaSosial, cls:'green'},
+      {label:'Total uang kas terkumpul', val: totalUangKas, cls:'green'},
+      {label:'Total konsumsi selama program', val: totalKonsumsi, cls:''},
+    ];
+    if(state.version === 'dengan'){
+      cells.push({label:'Simpanan sukarela / peserta (dikembalikan)', val: sukarelaPerOrang, cls:'green'});
+      cells.push({label:'Total simpanan sukarela terkumpul', val: totalSukarela, cls:'green'});
+    }
+    document.getElementById('ringkasanAkhir').innerHTML = cells.map(c=>`
+      <div class="stat-cell">
+        <div class="stat-label">${c.label}</div>
+        <div class="stat-value num ${c.cls}">${fmt(c.val)}</div>
+      </div>`).join('');
+
+    document.getElementById('footerTotals').textContent =
+      `Total dana dikelola 1 siklus (${rounds} bln): ${fmt(totalArisanDibagikan + totalDanaSosial + totalUangKas + totalKonsumsi + (state.version==='dengan'?totalSukarela:0))}`;
+  }
+
+  function renderCompare(){
+    document.getElementById('comparePesertaCount').textContent = state.pesertaCount;
+    const n = state.nominal;
+    const rows = [
+      {label:'Arisan', per:n.arisan, inDengan:true},
+      {label:'Konsumsi', per:n.konsumsi, inDengan:true},
+      {label:'Dana sosial', per:n.danaSosial, inDengan:true},
+      {label:'Uang kas', per:n.uangKas, inDengan:true},
+      {label:'Simpanan sukarela', per:n.sukarela, inDengan:true, onlyDengan:true},
+    ];
+    let html = rows.map(r=>{
+      const totalDengan = r.per * state.pesertaCount;
+      const totalTanpa = r.onlyDengan ? 0 : r.per * state.pesertaCount;
+      return `<tr>
+        <td>${r.label}</td>
+        <td class="num">${fmt(r.per)}${r.onlyDengan?'<br><span style="font-size:11px;color:var(--ink-muted)">(hanya versi dengan sukarela)</span>':''}</td>
+        <td class="num col-dengan">${fmt(totalDengan)}</td>
+        <td class="num col-tanpa">${r.onlyDengan ? '—' : fmt(totalTanpa)}</td>
+      </tr>`;
+    }).join('');
+
+    const totalPerDengan = n.arisan+n.konsumsi+n.danaSosial+n.uangKas+n.sukarela;
+    const totalPerTanpa = n.arisan+n.konsumsi+n.danaSosial+n.uangKas;
+    html += `<tr class="total">
+      <td>Total / bulan</td>
+      <td class="num">${fmt(totalPerDengan)} vs ${fmt(totalPerTanpa)}</td>
+      <td class="num col-dengan">${fmt(totalPerDengan*state.pesertaCount)}</td>
+      <td class="num col-tanpa">${fmt(totalPerTanpa*state.pesertaCount)}</td>
+    </tr>`;
+    document.getElementById('compareBody').innerHTML = html;
+  }
+
+  function renderUndianStatus(){
+    document.getElementById('roundNow').textContent = state.history.length;
+    document.getElementById('poolLeft').textContent = state.pool.length;
+    document.getElementById('titlePesertaCount').textContent = state.pesertaCount;
+    document.getElementById('thSukarela').style.display = state.version === 'dengan' ? '' : 'none';
+    const drawBtn = document.getElementById('drawBtn');
+    const simBtn = document.getElementById('simulateBtn');
+    const finished = state.pool.length === 0;
+    drawBtn.disabled = finished;
+    simBtn.disabled = finished;
+    drawBtn.textContent = finished ? 'Semua peserta sudah menang' : 'Kocok undian bulan ini';
+  }
+
+  function renderLastResult(){
+    const el = document.getElementById('undianResult');
+    if(state.history.length === 0){
+      el.className = 'undian-result empty';
+      el.innerHTML = 'Belum ada undian bulan ini. Tekan "Kocok undian bulan ini" untuk mulai.';
+      return;
+    }
+    if(state.pool.length === 0){
+      el.className = 'undian-result done';
+      el.innerHTML = `Siklus selesai — seluruh ${state.pesertaCount} peserta sudah pernah menang setelah ${state.history.length} bulan.`;
+      return;
+    }
+    const last = state.history[state.history.length-1];
+    el.className = 'undian-result';
+    el.innerHTML = `<div class="winners-wrap">
+      <div class="round-tag">Bulan ke-${last.round}</div>
+      <div class="winners-list">
+        ${last.winners.map(w=>`<span class="winner-card">${w}</span>`).join('')}
+      </div>
+      <span class="winner-amount">Masing-masing menerima <span class="num">${fmt(last.potPerWinner)}</span></span>
+    </div>`;
+  }
+
+  function renderHistoryTable(){
+    const body = document.getElementById('historyBody');
+    if(state.history.length === 0){
+      body.innerHTML = '<tr><td colspan="6" class="table-empty-note">Riwayat undian akan muncul di sini setelah undian pertama dijalankan.</td></tr>';
+      return;
+    }
+    body.innerHTML = state.history.map(h=>`
+      <tr>
+        <td>Bulan ${h.round}</td>
+        <td class="winners-cell">${h.winners.join(', ')}</td>
+        <td>${fmt(h.potPerWinner)}</td>
+        <td>${fmt(h.cumDanaSosial)}</td>
+        <td>${fmt(h.cumUangKas)}</td>
+        <td style="${state.version==='dengan'?'':'display:none;'}">${fmt(h.cumSukarela)}</td>
+      </tr>`).join('');
+  }
+
+  function renderAllStatic(){
+    renderRincian();
+    renderRingkasanBulanan();
+    renderRingkasanAkhir();
+    renderCompare();
+    renderUndianStatus();
+    renderLastResult();
+    renderHistoryTable();
+  }
+
+  // ---------- Actions ----------
+  function drawRound(){
+    if(state.pool.length === 0) return;
+    const drawCount = Math.min(state.winnersPerRound, state.pool.length);
+    const poolCopy = state.pool.slice();
+    const chosen = [];
+    for(let i=0;i<drawCount;i++){
+      const idx = Math.floor(Math.random()*poolCopy.length);
+      chosen.push(poolCopy.splice(idx,1)[0]);
+    }
+    state.pool = poolCopy;
+    const round = state.history.length + 1;
+    const potArisan = categoryMonthlyTotal('arisan');
+    const potPerWinner = potArisan / drawCount;
+
+    const prevDS = state.history.length ? state.history[state.history.length-1].cumDanaSosial : 0;
+    const prevUK = state.history.length ? state.history[state.history.length-1].cumUangKas : 0;
+    const prevSK = state.history.length ? state.history[state.history.length-1].cumSukarela : 0;
+
+    state.history.push({
+      round,
+      winners: chosen.map(i=>state.names[i]),
+      potPerWinner,
+      cumDanaSosial: prevDS + categoryMonthlyTotal('danaSosial'),
+      cumUangKas: prevUK + categoryMonthlyTotal('uangKas'),
+      cumSukarela: prevSK + (state.version==='dengan' ? categoryMonthlyTotal('sukarela') : 0)
+    });
+
+    renderUndianStatus();
+    renderLastResult();
+    renderHistoryTable();
+  }
+
+  function simulateAll(){
+    while(state.pool.length > 0){ drawRound(); }
+  }
+
+  function resetSimulation(){
+    initSimulation();
+    renderUndianStatus();
+    renderLastResult();
+    renderHistoryTable();
+  }
+
+  function applySettings(){
+    const pesertaInput = parseInt(document.getElementById('inpPeserta').value, 10);
+    const winnersInput = parseInt(document.getElementById('inpWinners').value, 10);
+    const namesRaw = document.getElementById('inpNames').value.trim();
+    const customNames = namesRaw ? namesRaw.split('\n').map(s=>s.trim()).filter(Boolean) : [];
+
+    state.pesertaCount = customNames.length > 0 ? customNames.length : (isNaN(pesertaInput) || pesertaInput < 3 ? 150 : pesertaInput);
+    state.winnersPerRound = isNaN(winnersInput) || winnersInput < 1 ? 3 : winnersInput;
+    state.nominal.arisan = parseInt(document.getElementById('inpArisan').value,10) || 0;
+    state.nominal.konsumsi = parseInt(document.getElementById('inpKonsumsi').value,10) || 0;
+    state.nominal.danaSosial = parseInt(document.getElementById('inpDanaSosial').value,10) || 0;
+    state.nominal.uangKas = parseInt(document.getElementById('inpUangKas').value,10) || 0;
+    state.nominal.sukarela = parseInt(document.getElementById('inpSukarela').value,10) || 0;
+
+    document.getElementById('inpPeserta').value = state.pesertaCount;
+
+    initSimulation();
+    if(customNames.length > 0){ state.names = customNames; state.pool = state.names.map((n,i)=>i); }
+
+    document.getElementById('settingsNote').textContent = 'Pengaturan diterapkan — simulasi diulang dari awal.';
+    setTimeout(()=>{ document.getElementById('settingsNote').textContent=''; }, 3000);
+
+    renderAllStatic();
+  }
+
+  // ---------- Events ----------
+  document.getElementById('drawBtn').addEventListener('click', drawRound);
+  document.getElementById('simulateBtn').addEventListener('click', simulateAll);
+  document.getElementById('resetBtn').addEventListener('click', resetSimulation);
+  document.getElementById('applySettingsBtn').addEventListener('click', applySettings);
+
+  document.getElementById('versionSwitch').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.switch-btn');
+    if(!btn) return;
+    document.querySelectorAll('.switch-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.version = btn.dataset.version;
+    resetSimulation();
+    renderAllStatic();
+  });
+
+  // ---------- Init ----------
+  initSimulation();
+  renderAllStatic();
+})();
+</script>
+</body>
+</html>
